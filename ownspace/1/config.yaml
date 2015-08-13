@@ -1,0 +1,10 @@
+name: ownspace 
+version: 1  
+  
+libraries: 
+- name:"django"  
+  version:"1.7" 
+handlers:
+- url: /static/
+  static_path: static
+  gzip: on

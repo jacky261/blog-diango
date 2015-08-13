@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="jacky" >
+
+    <title>Sign in </title>
+    <link href="/static/css/bootstrap.mn.css" rel="stylesheet">
+
+    <link href="/static/css/signin1.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <form class="form-signin" action="/acc_login/" method="post">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        {{loginform.as_p }}
+        <button class="btn btn-lg btn-primary btn-block"  type="submit">Sign in</button> <br>
+        if you have no account,please  <a href="/register/">sign up</a>
+        <br>
+        <div class='tip_txt'>
+        {%if errors %}
+        {{errors}}
+        {%endif%}
+        <div>
+      </form>
+       
+    </div> <!-- /container -->
+
+  
+
+</body></html>

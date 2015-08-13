@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta lang="zh-CN">
+    <meta xmlns:wb="http://open.weibo.com/wb">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="jacky" >
+
+    <title>My Space </title>
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/css/navbar-fixed-top.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">  
+    <link href="/static/css/login_main.css" rel="stylesheet">  
+      <link href="/static/css/cus2.css" rel="stylesheet">  
+     <link href="/static/css/cus3.css" rel="stylesheet"> 
+       <link href="/static/css/detail-cus.css" rel="stylesheet"> 
+  </head>
+
+  <body  ><div>
+  <ul class="hourTens">
+    <li>0</li>
+    <li>1</li>
+    <li>2</li>
+  </ul>
+  <ul class="hourOnes">
+    <li>0</li>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+    <li>7</li>
+    <li>8</li>
+    <li>9</li>
+  </ul>
+
+  <ul class="minuteTens">
+    <li>0</li>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+  </ul>
+  <ul class="minuteOnes">
+    <li>0</li>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+    <li>7</li>
+    <li>8</li>
+    <li>9</li>
+  </ul>
+
+  <ul class="secondTens">
+    <li>0</li>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+  </ul>
+  <ul class="secondOnes">
+    <li>0</li>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+    <li>7</li>
+    <li>8</li>
+    <li>9</li>
+  </ul>
+</div>
+
+   <div class="bannerBox" bannerBox >
+    <div class="ad" .ad>
+        <ul class="slider" slider>
+             <li><a ><img src="/static/image/nav.jpg"/></a></li>
+        </ul>
+    </div>
+</div>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top"  >
+      <div class="container">
+               <div class="navbar-header">
+      <space class="navbar-brand" href="#">
+        <!--img alt="Brand" src="..."--> My Space
+      </span>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse" >
+          <ul class="nav navbar-nav" >
+            <li class="active"><a href="/index/">All</a></li>
+          {%for category in bbs_category%}
+            {% ifequal category.id bbs_id %} 
+            <li class="active"><a href="{%url 'category' category.id %}">{{category.name}}</a></li>
+             {%else%}
+             <li><a href="{%url 'category' category.id %}">{{category.name}}</a></li>
+              {%endifequal%}
+          {%endfor%}
+              {%if user.is_superuser%}
+           <li><a href="/adm/">Manager</a></li>
+              {%endif%}
+          </ul>              
+          <ul class="nav navbar-nav navbar-right" >            
+           <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+              {%if user.is_authenticated %}
+          Welcome, {{user.username}}
+                  <img src='/static/image/author.jpg' class ='img-circle'/>
+          {%else%}
+           anonymous
+          {%endif%}
+           
+           <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+              {%if user.is_authenticated%}
+             <!-- <li><a href="/Persode/">personal</a></li>-->
+               <li style="display:none"><a href="/login/">Login</a></li>
+               <li><a href="/add_pub/">Post_Blog</a></li>  
+               <li><a href="/logout/">logout</a></li>          
+              {%else%}
+               <li><a href="/login/">Login</a></li>
+               <li style="display:none"><a href="/add_pub/">Post_Blog</a></li>
+                <li style="display:none"><a href="/logout/">logout</a></li>                
+              {%endif%}
+               
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container  shadow-box-noshadow " >
+    {% load pagination_tags %}
+     {% autopaginate bbs_list  10%}
+    {%block page-content%}
+      <div class="jumbotron" RecentBlogs .BlogList li>
+  
+        {%for bbs in bbs_list%}
+         <a href="{% url 'detail' bbs.id%}">{{bbs.title}}</a>
+         <br>
+         {{bbs.summary}}
+         <hr>
+        {%endfor%}
+      
+      </div>
+        <span class='fenye'> {% paginate %} </span>
+ {%endblock%}
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+<!--<div id="topcontrol" title="回到顶部" style="position: fixed; bottom: 165px; right: 100px; cursor: pointer;">
+<img src="/static/image/author.jpg" style="width:31px; height:31px;"></div>
+  -->
+
+</body></html>

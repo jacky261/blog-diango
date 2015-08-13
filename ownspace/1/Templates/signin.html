@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- saved from url=(0038)http://v3.bootcss.com/examples/signin/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="jacky" >
+
+    <title>Sign up </title>
+
+    <link href="/static/css/bootstrap.mn.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/signin.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <div class="container">
+      <form class="form-signin" action="/acc_register/" method="post" enctype='multipart/form-data'>
+        <h2 class="form-signin-heading"> sign up</h2>
+        <label>Username: </label><input type="text" name="username" class="form-control" placeholder="username"  autofocus="">
+        <label >Password:</label>
+       <input type="password" name="passwd" class="form-control" placeholder="Password">
+       <label>Email: </label>
+       <input type="email" name="email" class="form-control" placeholder="Email">
+        <label>Signature </label>
+       <input type='text'  name="signature" class="form-control" />
+        <br/>
+        <br/>
+        <button class="btn  btn-lg  btn-primary " type="submit">Signup</button>
+        <br>
+        <div class='tip_txt'>
+        {%if errors %}
+        {{errors}}
+        {%endif%}
+        <div>
+      </form>
+       
+    </div> <!-- /container -->
+
+  
+
+</body></html>

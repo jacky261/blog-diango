@@ -1,0 +1,150 @@
+from django.shortcuts import render
+from django.shortcuts import render_to_response
+from django.http import HttpResponseRedirect,HttpResponse,Http404
+from app01.models import BBS,BBS_user,Category
+from django.template.context import RequestContext
+from django.contrib import auth ,comments
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
+import hashlib
+from PIL import Image
+from app01.forms import LoginFrom,SignForm
+from django.views.decorators.cache import cache_page
+from django.core.mail import send_mail
+from django.db.models import Count,Sum
+# Create your views here.
+#main page 
+def index(req):
+    bbs_list=BBS.objects.all().order_by('-create_date')
+    bbs_category=Category.objects.all()
+    if req.user.id:
+        return render_to_response('base.html',{'bbs_list':bbs_list,'user':req.user,'bbs_category':bbs_category},context_instance=RequestContext(req))
+    else:
+        return render_to_response('base.html',{'bbs_list':bbs_list,'user':req.user,'bbs_category':bbs_category},context_instance=RequestContext(req))
+
+def detail(req,bbs_id):
+    bbs=BBS.objects.get(id=bbs_id)
+    if bbs is None:
+        return Http404();
+    bbs_category=Category.objects.all()
+    count= comments.models.Comment.objects.filter(object_pk=bbs_id).count()
+    comm= comments.models.Comment.objects.all().filter(object_pk=bbs_id).order_by('-submit_date')
+    author=BBS_user.objects.filter(id=bbs.author_id)
+    req.session['bbs_id']=bbs_id
+    bbs.view_count+=1
+    bbs.save()
+    total_view=cal_count(bbs_id)
+    tophot=BBS.objects.all().order_by('-view_count')[:10]
+    if req.user.id:
+        return render_to_response('detail.html',{'bbs':bbs,'user':req.user,'bbs_category':bbs_category,'author':author[0],'count':count,'comm':comm,'tophot':tophot,'total_view':total_view},context_instance=RequestContext(req))
+    else:
+        return render_to_response('detail.html',{'bbs':bbs,'bbs_category':bbs_category,'author':author[0],'count':count,'comm':comm,'tophot':tophot,'total_view':total_view},context_instance=RequestContext(req))
+def cal_count(bbs_id):
+    user_id=BBS.objects.get(id=bbs_id).author_id
+    counts=BBS.objects.all().filter(author_id=user_id).aggregate(total_view=Sum('view_count')).get('total_view')
+    print counts
+    return counts
+def sub_comment(req):
+    bbs_id= req.POST.get('bs_id')
+    content=req.POST.get('comment_content')
+    users=User.objects.get(username=req.user)
+    comments.models.Comment.objects.create(content_type_id=1,user_id=users.id,object_pk=bbs_id,site_id=1,user_name=req.user,comment=content)
+    return HttpResponseRedirect('/detail/%s' % bbs_id )
+
+def logout_view(req):
+    auth.logout(req)
+    bbs_list=BBS.objects.all()
+    bbs_category=Category.objects.all()
+    return render_to_response('base.html',{'bbs_list':bbs_list,'user':req.user,'bbs_category':bbs_category},context_instance=RequestContext(req))
+
+def login(req):
+    loginform=LoginFrom()
+    return render_to_response('login.html',{"loginform":loginform})
+
+def acc_login(req):
+    if req.method=='POST':
+        loginform=LoginFrom(req.POST)
+        if loginform.is_valid:
+            username=loginform.data['Username']
+            password=loginform.data['Password']
+            user=auth.authenticate(username=username,password=password)
+            if user is not None:
+                auth.login(req, user)
+                return HttpResponseRedirect('/index/')
+            else:
+                loginform=LoginFrom()
+                return render_to_response('login.html',{"loginform":loginform,'errors':'the password incorrect.please try it again!'})
+    else:
+        loginform=LoginFrom()
+    return render_to_response('login.html',{"loginform":loginform})
+
+    
+def add_pub(req):
+    bbs_category=Category.objects.all()
+    return render_to_response('bbs_pub.html', {'bbs_category':bbs_category})
+
+def add_sub(req):
+    content=req.POST.get('sub_comment')
+    title=req.POST.get('title')
+    summary=req.POST.get('summary')
+    category=req.POST.get('category')
+    if len(content)<1 or len(title)<1 or len(category)<1:
+        bbs_category=Category.objects.all()
+        return render_to_response('bbs_pub.html', {'bbs_category':bbs_category,'errors':'please input the required field.'})
+    author=BBS_user.objects.get(user__username=req.user)
+    BBS.objects.create(title=title,summary=summary,content=content,author=author,category_id=category,view_count=1,ranking=2)
+    #bbs_list=BBS.objects.all()
+    #bbs_category=Category.objects.all()
+    return HttpResponseRedirect('/index/')
+    #return render_to_response('base.html',{'bbs_list':bbs_list,'user':req.user,'bbs_category':bbs_category})
+
+def category(req,category_id):
+    bbs_list=BBS.objects.filter(category__id=category_id).order_by('-create_date')
+    if bbs_list is None:
+        return Http404();
+    else:
+        
+        bbs_category=Category.objects.all()
+        return render_to_response('base.html',{'bbs_list':bbs_list,'user':req.user,'bbs_category':bbs_category,'bbs_id':int(category_id)},context_instance=RequestContext(req))
+
+def Persode(req):
+    user_id= req.user.id
+    p=User.objects.get(id=user_id)
+    n=BBS_user.objects.get(user__id=user_id)
+    print n.signature
+    print n.headimg
+    print p.username
+    print p.email
+    return render_to_response('persons.html',{'P_user':p,'B_user':n})
+#    return HttpResponse('it is developing................. ')
+
+def register(req):
+    signForm=SignForm()
+    return render_to_response('signin.html',{'signForm':signForm})
+           
+def acc_register(req):
+    usernam=req.POST.get('username')
+    signature=req.POST.get('signature')
+    passwds=req.POST.get('passwd')
+    nemail=req.POST.get('email')
+    print len(usernam)
+    if len(usernam)==0 or len(passwds)==0 or len(nemail)==0:
+        signForm=SignForm() 
+        errortips=" please input the field"
+        return render_to_response('signin.html',{'signForm':signForm,"errors":errortips})
+    else:        
+        users=User.objects.filter(username=usernam)
+        if users:
+           signForm=SignForm()
+           errortips=usernam+" has exist,please try again!"
+           return render_to_response('signin.html',{'signForm':signForm,"errors":errortips})
+        else:  
+           user=User.objects.create_user(usernam, nemail)
+           user.set_password(passwds)
+           user.is_staff = True
+           user.save()
+           pid=User.objects.get(username=usernam).id
+           BBS_user.objects.create(user_id=pid,headimg='image/author.jpg',signature=signature)
+           message='Dear '+usernam+ '\n  Congratlution, you have register succsss! thanks for your register my blog. \n    you can enter the main page , click in  http://ownspace.sinaapp.com/login/ '
+           send_mail('My Blog register', message, 'tsghk@163.com', [nemail],fail_silently=False)
+           return HttpResponseRedirect('/login/')

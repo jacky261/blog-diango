@@ -1,0 +1,12 @@
+
+body{ }
+.bc{background:url(/static/image/bod.jpg);}
+.bannerBox{width:1100px; margin:10px auto 0;}
+.ad{width:1000px;height:200px;overflow:hidden;position:relative;padding:0;}
+.tip_txt {font:italic bolder 16px Arial;color:#eb7350;}
+.author-cs {font-size:15px;color:#eb7350;}
+.author-dis {font-size:15px;color:#5C4033;text-align:center;margin:20px}
+.author-hot {font-size:20px;color:#FF0033;text-align:center;margin:25px}
+.error-tips {font-size:25px;color:#FF69B4;text-align:center;}
+.panel_head { clear: both; height: 30px; /* padding: 0 10px; */ border-radius:4px; background:#C0D9D9 repeat-x top; color: #333; font: bold 12px/30px Arial; text-indent: 5px;margin:5px;padding:0px; }
+.panel_side{margin:0 0 2px 0; padding:7px; border:solid 1px #ddd; background:#C0C0C0 border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -khtml-border-radius:5px;}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html  xmlns:wb="http://open.weibo.com/wb" lang="zh-CN" ><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta lang="zh-CN">
+    <meta xmlns:wb="http://open.weibo.com/wb">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="jacky" >
+
+    <title>Jacky's space room</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/css/navbar-fixed-top.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">  
+      <link href="/static/css/cus3.css" rel="stylesheet">  
+       <link href="/static/css/detail-cus.css" rel="stylesheet"> 
+    
+    <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top"  >
+      <div class="container">
+        <div id="navbar" class="navbar-collapse collapse" >
+          <ul class="nav navbar-nav" >
+            <li class="active"><a href="/index/">Main</a></li>
+          {%for category in bbs_category%}
+            {% ifequal category.id bbs_id %} 
+            <li class="active"><a href="{%url 'category' category.id %}">{{category.name}}</a></li>
+             {%else%}
+             <li><a href="{%url 'category' category.id %}">{{category.name}}</a></li>
+              {%endifequal%}
+          {%endfor%}
+          </ul>              
+          <ul class="nav navbar-nav navbar-right" >            
+           <li class="dropdown">
+          <span class='author-cs' >
+              {%if user.is_authenticated %}
+          Welcome,{{user.username}}
+          {%else%}
+           anonymous
+          {%endif%}
+           </span>
+               
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+ 
+ 
+<div class="container container-fluid">
+<div class="row">
+  <div class="col-sm-5 col-md-2 panel_side  sidebar ">
+
+    <ul class="nav nav-sidebar" >
+     <div class='panel_head'>
+       Person info
+     </div>
+     <img src='/static/image/headers.png'></img><br>
+     <span class= 'author-dis' target='_blank'>  {{author}}</span>
+    </ul>
+    <hr>
+    <ul class="nav nav-sidebar">
+   <div class='panel_head'>
+    View count:{{bbs.view_count}}
+   </div>
+    </ul>
+<hr>
+<pre><span class ='author-hot'>Hot!</span>
+</pre>
+<ul class="nav nav-sidebar" >
+<div class= 'author-dis' target='_blank' > Top 10</div>
+<hr>
+{% for tit in tophot%}
+ {{forloop.counter}}.<a href="{% url 'detail' tit.id %}">{{tit.title}}</a> ({{tit.view_count}})
+<hr>
+{%endfor%}
+
+</ul>
+    </div>
+<div class=" col-sm-5 bc col-md-8 col-md-offset-2 main">
+ {%load comments%}
+ <div class='article_title'>
+{{bbs.title}}
+</div>
+    <div> Create time: {{bbs.create_date}}     &nbsp &nbsp    view_count: {{bbs.view_count}}</div>
+ <hr>
+ {{bbs.content|safe}}
+<hr>
+<div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=2&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+<hr>
+<image src='/static/image/author.jpg'/>    <span class='author-cs'>{{author}}</span>
+ <span class='badge'>{{count}}</span>
+  <span class='badge'>
+ <wb:follow-button uid="3071157751" type="red_1" width="67" height="24" ></wb:follow-button> </span>
+  <hr>
+{%if user.is_authenticated %}
+
+<form action='/sub_comment/' method='POST'>
+<textarea cols=80 rows=8 name='comment_content'></textarea>
+<input type='hidden' name='bs_id' value={{bbs.id}}  />
+<br>
+<input type='submit' id='id_sumbit' value='Add comment' />
+</from>
+
+<br>
+{%else%}
+<hr/>
+<p>if you want to submit comment,please <a  href=/login/>Login it</a> </p>
+<hr/>
+{%endif%}
+{% render_comment_list for bbs %}
+
+
+{%for comment in comm %}
+<p>  {{comment.comment}} --{{comment.submit_date}}  <span class='author-cs'> by  {{comment.user_name}}</span>  </p><hr>
+{%endfor%}
+    </div>
+  </div>
+</div>
+
+
+
+
+</body>
+</html>
