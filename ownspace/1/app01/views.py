@@ -16,6 +16,7 @@ from django.db.models import Count,Sum
 
 # Create your views here.
 #main page 
+
 def index(req):
     bbs_list=BBS.objects.all().order_by('-create_date')
     bbs_category=Category.objects.all()

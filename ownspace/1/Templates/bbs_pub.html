@@ -33,7 +33,7 @@ tinymce.init({
     <input type='text' style="height:50px;width:1000px" name='summary'/>
     <hr/>
     Category:<br><br>
-    {% for cate in bbs_category%}
+    {% for cate in bbs_category %}
     <input type='radio' name=category value={{cate.id}}  /> :{{cate.name}} 
    {%endfor %}	
 <br/><br/>
